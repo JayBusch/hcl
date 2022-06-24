@@ -25,9 +25,8 @@ type ProcessConfig struct {
 }
 
 //export ParseConfig
-func ParseConfig() (rc int, return_config *C.char, errstr *C.char) {
-	var config Config
-	err := hclsimple.DecodeFile("config.hcl", nil, &config)
+func ParseConfig(configFileName *C.char) (rc int, config *C.char, errstr *C.char) {
+	err := hclsimple.DecodeFile(string(*configFileName), nil, &config)
 	if err != nil {
 		log.Fatalf("Failed to load configuration: %s", err)
 	}
