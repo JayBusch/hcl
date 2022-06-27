@@ -4,6 +4,7 @@ import (
 	"C"
 	"log"
 	"fmt"
+	//	"io/ioutil"
 	"github.com/hashicorp/hcl/v2/hclsimple"
 )
 
@@ -25,13 +26,24 @@ type ProcessConfig struct {
 }
 
 //export ParseConfig
-func ParseConfig(configFileName *C.char) (rc int, config *C.char, errstr *C.char) {
-	err := hclsimple.DecodeFile(string(*configFileName), nil, &config)
+func ParseConfig(configFileName string) (rc int, config_c *C.char, errstr *C.char) {
+	log.Printf("configFileName: %s", configFileName)
+
+//	fileData, err := ioutil.ReadFile(configFileName[:len(configFileName)-1])
+//	log.Printf("ioutil err: %s", err)
+
+//	log.Printf("file data: %s", fileData)
+
+	config_go := Config{
+		IOMode : "hcl:Read",
+	}
+
+	err := hclsimple.DecodeFile(configFileName[:len(configFileName)-1], nil, &config_go)
 	if err != nil {
 		log.Fatalf("Failed to load configuration: %s", err)
 	}
-	log.Printf("Configuration is %#v", config)
-	return 0, C.CString(fmt.Sprintf("%v", config)), nil
+	log.Printf("Configuration is %#v", config_go)
+	return 0, C.CString(fmt.Sprintf("%v", config_go)), nil
 }
 
 func main() {}
